@@ -359,9 +359,12 @@ def get_lcqmc_bert(vocab:Vocabulary, is_merge=0):
     """
     使用LCQMC数据集，并将每个query其转为word_id，
     """
-    train=train_examples(file="./data/train_merge.csv",sep="\t")
-    dev=train_examples(file="./data/dev_merge.csv",sep="\t")
-    test=train_examples(file="./data/test_merge.csv",sep="\t")
+    # train=train_examples(file="./data/train_merge.csv",sep="\t")
+    # dev=train_examples(file="./data/dev_merge.csv",sep="\t")
+    # test=train_examples(file="./data/test_merge.csv",sep="\t")
+    train=train_examples(file="./data/train_wentian.csv",sep="\t")
+    dev=train_examples(file="./data/dev_wentian.csv",sep="\t")
+    test=train_examples(file="./data/test_wentian.csv",sep="\t")
     train_set = trans_lcqmc_bert(train, vocab, is_merge)
     dev_set = trans_lcqmc_bert(dev, vocab, is_merge)
     test_set = trans_lcqmc_bert(test, vocab, is_merge)
@@ -389,8 +392,16 @@ def get_test_bert(file_:str, vocab:Vocabulary, is_merge=0):
     return out_arr, test_arr
 
 
+
 def get_query_bert(q1,q2, vocab:Vocabulary, is_merge=0):
     test_arr = [[q1,q2]]
+    out_arr, _ = get_test_bert_by_arr(test_arr, vocab, is_merge)
+    return out_arr, test_arr
+
+def get_query_recall_bert(q1,recalls, vocab:Vocabulary, is_merge=0):
+    test_arr = []
+    for doc in recalls:
+        test_arr.append([q1,doc])
     out_arr, _ = get_test_bert_by_arr(test_arr, vocab, is_merge)
     return out_arr, test_arr
 
@@ -420,6 +431,23 @@ def get_test_bert_single(file_:str, vocab:Vocabulary, is_merge=0):
         out_ids1, mask_ids1, seg_ids1, seq_len1 = vocab._transform_seq2bert_id(t1, padding=1)
         out_arr.append([out_ids1, mask_ids1, seg_ids1, seq_len1])
     return out_arr, test_arr
+
+def get_test_bert_singletext(text, vocab:Vocabulary, is_merge=0):
+    test_arr=[text]
+    out_arr = []
+    for line in test_arr:
+        t1 = line   # [t1_ids, t1_len, t2_ids, t2_len, label]
+        out_ids1, mask_ids1, seg_ids1, seq_len1 = vocab._transform_seq2bert_id(t1, padding=1)
+        out_arr.append([out_ids1, mask_ids1, seg_ids1, seq_len1])
+    return out_arr, test_arr
+
+
+
+def get_test_bert_single_text(text, vocab:Vocabulary):
+    out_arr = []
+    out_ids1, mask_ids1, seg_ids1, seq_len1 = vocab._transform_seq2bert_id(text, padding=1)
+    out_arr.append([out_ids1, mask_ids1, seg_ids1, seq_len1])
+    return out_arr, text
 
 
 def get_test_bert_singlequery(query, vocab:Vocabulary, is_merge=0):
@@ -464,25 +492,24 @@ if __name__ == '__main__':
     #     print(each)
     # pass
 
-    dataset = hub.dataset.LCQMC()
+    path="D:\source_code\gitclone\dssm-master\data\query_emb_all.txt"
 
-    k=0
-    with open('test.csv','w',encoding='utf8') as f:
-        f.write("query1"+"\t"+"query2"+"\t"+"label"+"\n")
-        for i,e in enumerate(dataset.test_examples):
-            if i>0:
-                f.write("\n")
-            # print(i)
-            
-            f.write(e.text_a+"\t"+e.text_b+"\t"+e.label)
-            
-            if np.random.randint(10)<1 and len(e[1])>6:
-                k+=1
-                f.write("\n")
-                f.write(e.text_a+"\t"+e.text_b[:np.random.randint(1,5,1)[0]]+"\t"+'0')
-                
-            # f.write(e[1]+"\t"+e[2])
-            
-            with open("./data/train_merge.csv","r",encoding="utf8") as f:
-                header=next(f)
-                print(header)
+    cfg_path = "./configs/config_bert.yml"
+
+    # vocab: 将 seq转为id，
+    vocab = Vocabulary(meta_file='./data/vocab.txt', max_len=64, allow_unk=1, unk='[UNK]', pad='[PAD]')
+    # 读取数据
+    test_arr, query_arr = get_test_bert_single(path, vocab)
+    
+    
+    file="./data/train_wentian.csv"
+    with open(file,"r",encoding="utf8") as f:
+    
+        f=open(file,"r",encoding="utf8") 
+        res=[]
+        header=next(f)
+        lines=f.readlines()
+        random.shuffle(lines)
+        for line in lines:
+            line=line.strip("\n").split("\t")
+            print(int(line[-1]))

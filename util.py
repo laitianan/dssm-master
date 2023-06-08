@@ -31,11 +31,10 @@ def convert_to_unicode(text):
     else:
         raise ValueError("Not running on Python2 or Python 3?")
 
-def read_file(file_:str, splitter:str="\t"):
+def read_file(file_:str, splitter:str=None):
     out_arr = []
     with open(file_, encoding="utf-8") as f: 
         out_arr = [x.strip("\n") for x in f.readlines()]
-        out_arr=out_arr[1:]
         if splitter:
             out_arr = [x.split(splitter) for x in out_arr]
     return out_arr

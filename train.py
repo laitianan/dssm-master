@@ -123,13 +123,13 @@ def predict_bert(file_="./results/input/test"):
     write_file(out_arr, file_ + '.bert.predict', )
     pass
 
-def siamese_bert_sentence_embedding(file_="./results/input/test.single"):
+def siamese_bert_sentence_embedding(file_="./data/query_emb_all.txt"):
     # 输入一行是一个query，输出是此query对应的向量
     # 读取配置
     cfg_path = "./configs/config_bert.yml"
     cfg = yaml.load(open(cfg_path, encoding='utf-8'), Loader=yaml.FullLoader)
     cfg['batch_size'] = 64
-    os.environ["CUDA_VISIBLE_DEVICES"] = "7"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     # vocab: 将 seq转为id，
     vocab = Vocabulary(meta_file='./data/vocab.txt', max_len=cfg['max_seq_len'], allow_unk=1, unk='[UNK]', pad='[PAD]')
     # 读取数据
@@ -148,6 +148,7 @@ if __name__ == "__main__":
     
     
     train_siamese_bert()
+    siamese_bert_sentence_embedding()
     
     
     # file_="./test.txt"
