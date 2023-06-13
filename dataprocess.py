@@ -34,7 +34,7 @@ with open("./data/data.txt","r",encoding='utf-8') as f:
 keys=list(query_dict.keys())
 
 n=len(keys)
-# import numpy as np 
+import numpy as np 
 from nlpcda import CharPositionExchange
 
 def random_by_dl(ts):
@@ -59,6 +59,13 @@ def random_text(text):
         
         if text[rd] in ["一","二","三","四","五","六","七","八","九","十",""]:
             continue 
+        
+        if ord("a")<=ord(text[rd]) and ord(text[rd])<=ord("z"):
+            continue 
+        
+        if ord("A")<=ord(text[rd]) and ord(text[rd])<=ord("Z"):
+            continue 
+        
         if rd not in rand  :
             rand.append(rd)
     
@@ -113,7 +120,27 @@ for i,line in query_dict.items():
     if len(line)<=5:
         continue 
     
-    f_q.write(f"{line}\t{line}\t1\n")
+    if np.random.rand()<0.8:
+        line2=line
+        ch1=""
+        ch2=""
+        rep=["号楼","号","座","栋"]
+        
+        for ch in rep:
+            if line2.count(ch):
+                rep.remove(ch)
+                ch1=ch
+                ch2=np.random.choice(rep,1)[0]
+                break
+        if ch1!="":
+            
+            line2=line2.replace(ch1,ch2)
+
+            # print("随机",line,"-----",line2)
+        f_q.write(f"{line}\t{line2}\t1\n")
+        
+    else:
+        f_q.write(f"{line}\t{line}\t1\n")
     
     if np.random.rand()<0.15:
         if np.random.rand()<0.5:
@@ -128,7 +155,7 @@ for i,line in query_dict.items():
     
     ran_keys=keys[ind:ind+1000]
     choice=np.random.choice(ran_keys,3)
-
+ 
     if i in choice:
         choice=[e for e in choice if e!=i]
     if numbers and not_except:
@@ -143,8 +170,6 @@ for i,line in query_dict.items():
         
         f_q.write(f"{line}\t{query2}\t0\n")
             
-        
-        
         
 with open("./data/data_nuber.txt","r",encoding='utf-8') as f:
     for line in f:
@@ -172,4 +197,3 @@ val.to_csv("./data/dev_wentian.csv",index=False,sep="\t")
 test.to_csv("./data/test_wentian.csv",index=False,sep="\t")
 
 
-    

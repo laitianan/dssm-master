@@ -44,7 +44,8 @@ def get_knn(index,query_embedding, id_texts,k):
     _, indices = index.search(query_embedding, k + 1)
     texts = []
     for i in indices[0]:
-        texts.append(id_texts[i])
+        text=id_texts[i].split("####")[-1]
+        texts.append(text)
     return texts
 
 

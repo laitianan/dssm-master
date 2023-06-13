@@ -39,6 +39,23 @@ def read_file(file_:str, splitter:str=None):
             out_arr = [x.split(splitter) for x in out_arr]
     return out_arr
 
+def read_file2(file_:str, splitter:str=None):
+    out_arr = []
+    with open(file_, encoding="utf-8") as f:
+        # out_arr = [x.strip("\n") for x in f.readlines()]
+        ordeids=[]
+        out_arr=[]
+
+        for line in f.readlines():
+            line=line.strip("\n").split("####")
+            ordeids.append(line[0])
+            out_arr.append(line[1])
+
+
+        if splitter:
+            out_arr = [x.split(splitter) for x in out_arr]
+    return out_arr,ordeids
+
 def write_file(out_arr:list, file_:str, splitter='\t'):
     with open(file_, 'w', encoding='utf-8') as out:
         for line in out_arr:

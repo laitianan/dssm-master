@@ -10,7 +10,7 @@ import six
 import math
 import random
 import sys
-from util import read_file
+from util import read_file,read_file2
 from config import Config
 # 配置文件
 conf = Config()
@@ -424,16 +424,19 @@ def get_test_bert_by_arr(test_arr:list, vocab:Vocabulary, is_merge=0):
     return out_arr, test_arr
 
 def get_test_bert_single(file_:str, vocab:Vocabulary, is_merge=0):
-    test_arr = read_file(file_) # [q1,...]
+    test_arr,ordeids = read_file2(file_) # [q1,...]
     out_arr = []
     for line in test_arr:
         t1 = line   # [t1_ids, t1_len, t2_ids, t2_len, label]
         out_ids1, mask_ids1, seg_ids1, seq_len1 = vocab._transform_seq2bert_id(t1, padding=1)
         out_arr.append([out_ids1, mask_ids1, seg_ids1, seq_len1])
-    return out_arr, test_arr
+    return out_arr, test_arr,ordeids
 
 def get_test_bert_singletext(text, vocab:Vocabulary, is_merge=0):
-    test_arr=[text]
+    if  not isinstance(text,list):
+        test_arr=[text]
+    else:
+        test_arr=text
     out_arr = []
     for line in test_arr:
         t1 = line   # [t1_ids, t1_len, t2_ids, t2_len, label]

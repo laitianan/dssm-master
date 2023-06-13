@@ -75,6 +75,7 @@ if __name__ == '__main__':
     model.restore_session(cfg["checkpoint_dir"])
 
     path = "./data/query_emb_all.txt.siamese.bert.embedding"
+    path="./data/emb/query_emb_all_part东莞市.txt.siamese.bert.embedding"
     id_texts, query_embedding=create_embedding_fromfile(path)
     index=create_faiss_index(query_embedding)
     app.run("0.0.0.0",80)
